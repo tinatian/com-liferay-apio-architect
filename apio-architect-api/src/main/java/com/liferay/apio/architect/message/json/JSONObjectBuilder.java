@@ -248,10 +248,6 @@ public class JSONObjectBuilder {
 
 	public static class ArrayValueStep {
 
-		public ArrayValueStep(ArrayNode arrayNode) {
-			_arrayNode = arrayNode;
-		}
-
 		/**
 		 * Adds a new JSON object, created by the provided consumer, to the JSON
 		 * array.
@@ -338,6 +334,10 @@ public class JSONObjectBuilder {
 			_arrayNode.add(value);
 		}
 
+		private ArrayValueStep(ArrayNode arrayNode) {
+			_arrayNode = arrayNode;
+		}
+
 		private final ArrayNode _arrayNode;
 
 	}
@@ -349,11 +349,6 @@ public class JSONObjectBuilder {
 	 * #numberValue(Number)}, or {@link #booleanValue(Boolean)}).
 	 */
 	public static class FieldStep {
-
-		public FieldStep(String name, ObjectNode objectNode) {
-			_name = name;
-			_objectNode = objectNode;
-		}
 
 		/**
 		 * Begins creating a JSON array inside the field.
@@ -530,6 +525,11 @@ public class JSONObjectBuilder {
 		 */
 		public void stringValue(String value) {
 			_objectNode.put(_name, value);
+		}
+
+		private FieldStep(String name, ObjectNode objectNode) {
+			_name = name;
+			_objectNode = objectNode;
 		}
 
 		private final String _name;
