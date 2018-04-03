@@ -14,9 +14,15 @@
 
 package com.liferay.apio.architect.message.json;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
+import static com.fasterxml.jackson.databind.SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.util.RawValue;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -80,13 +86,24 @@ import java.util.stream.Stream;
  */
 public class JSONObjectBuilder {
 
+	public JSONObjectBuilder() {
+		_objectNode = _OBJECT_MAPPER.createObjectNode();
+	}
+
 	/**
-	 * Returns the JSON object constructed by the JSON object builder.
+	 * Returns the JSON object constructed by the JSON object builder as a
+	 * {@code String}.
 	 *
 	 * @return the JSON object
+	 * @review
 	 */
-	public JsonObject build() {
-		return _jsonObject;
+	public String build() {
+		try {
+			return _OBJECT_MAPPER.writeValueAsString(_objectNode);
+		}
+		catch (JsonProcessingException jpe) {
+			return _objectNode.toString();
+		}
 	}
 
 	/**
@@ -96,7 +113,7 @@ public class JSONObjectBuilder {
 	 * @return the builder's next step
 	 */
 	public FieldStep field(String name) {
-		return new FieldStep(name, _jsonObject);
+		return new FieldStep(name, _objectNode);
 	}
 
 	/**
@@ -231,8 +248,8 @@ public class JSONObjectBuilder {
 
 	public static class ArrayValueStep {
 
-		public ArrayValueStep(JsonArray jsonArray) {
-			_jsonArray = jsonArray;
+		public ArrayValueStep(ArrayNode arrayNode) {
+			_arrayNode = arrayNode;
 		}
 
 		/**
@@ -257,7 +274,7 @@ public class JSONObjectBuilder {
 		 *        object to add to the JSON array
 		 */
 		public void add(JSONObjectBuilder jsonObjectBuilder) {
-			_jsonArray.add(jsonObjectBuilder.build());
+			_arrayNode.addRawValue(new RawValue(jsonObjectBuilder.build()));
 		}
 
 		/**
@@ -269,7 +286,7 @@ public class JSONObjectBuilder {
 		public void addAllBooleans(Collection<Boolean> collection) {
 			Stream<Boolean> stream = collection.stream();
 
-			stream.forEach(_jsonArray::add);
+			stream.forEach(_arrayNode::add);
 		}
 
 		/**
@@ -279,7 +296,7 @@ public class JSONObjectBuilder {
 		 * @param collection the number collection to add to the JSON array
 		 */
 		public void addAllNumbers(Collection<Number> collection) {
-			collection.forEach(_jsonArray::add);
+			collection.forEach(this::addNumber);
 		}
 
 		/**
@@ -291,7 +308,7 @@ public class JSONObjectBuilder {
 		public void addAllStrings(Collection<String> collection) {
 			Stream<String> stream = collection.stream();
 
-			stream.forEach(_jsonArray::add);
+			stream.forEach(_arrayNode::add);
 		}
 
 		/**
@@ -300,7 +317,7 @@ public class JSONObjectBuilder {
 		 * @param value the boolean value to add to the JSON array
 		 */
 		public void addBoolean(Boolean value) {
-			_jsonArray.add(value);
+			_arrayNode.add(value);
 		}
 
 		/**
@@ -309,7 +326,7 @@ public class JSONObjectBuilder {
 		 * @param value the number to add to the JSON array
 		 */
 		public void addNumber(Number value) {
-			_jsonArray.add(value);
+			_arrayNode.addRawValue(new RawValue(value.toString()));
 		}
 
 		/**
@@ -318,10 +335,10 @@ public class JSONObjectBuilder {
 		 * @param value the string to add to the JSON array
 		 */
 		public void addString(String value) {
-			_jsonArray.add(value);
+			_arrayNode.add(value);
 		}
 
-		private final JsonArray _jsonArray;
+		private final ArrayNode _arrayNode;
 
 	}
 
@@ -333,9 +350,9 @@ public class JSONObjectBuilder {
 	 */
 	public static class FieldStep {
 
-		public FieldStep(String name, JsonObject jsonObject) {
+		public FieldStep(String name, ObjectNode objectNode) {
 			_name = name;
-			_jsonObject = jsonObject;
+			_objectNode = objectNode;
 		}
 
 		/**
@@ -344,19 +361,19 @@ public class JSONObjectBuilder {
 		 * @return the builder's array value step
 		 */
 		public ArrayValueStep arrayValue() {
-			JsonArray jsonArray = Optional.ofNullable(
-				_jsonObject.get(_name)
+			ArrayNode arrayNode = Optional.ofNullable(
+				_objectNode.get(_name)
 			).filter(
-				JsonElement::isJsonArray
+				JsonNode::isArray
 			).map(
-				JsonArray.class::cast
+				ArrayNode.class::cast
 			).orElseGet(
-				JsonArray::new
+				_OBJECT_MAPPER::createArrayNode
 			);
 
-			_jsonObject.add(_name, jsonArray);
+			_objectNode.set(_name, arrayNode);
 
-			return new ArrayValueStep(jsonArray);
+			return new ArrayValueStep(arrayNode);
 		}
 
 		/**
@@ -365,7 +382,7 @@ public class JSONObjectBuilder {
 		 * @param value the boolean value to add to the JSON array
 		 */
 		public void booleanValue(Boolean value) {
-			_jsonObject.addProperty(_name, value);
+			_objectNode.put(_name, value);
 		}
 
 		/**
@@ -375,19 +392,19 @@ public class JSONObjectBuilder {
 		 * @return the builder's field step
 		 */
 		public FieldStep field(String name) {
-			JsonObject jsonObject = Optional.ofNullable(
-				_jsonObject.get(_name)
+			ObjectNode objectNode = Optional.ofNullable(
+				_objectNode.get(_name)
 			).filter(
-				JsonElement::isJsonObject
+				JsonNode::isObject
 			).map(
-				JsonObject.class::cast
+				ObjectNode.class::cast
 			).orElseGet(
-				JsonObject::new
+				_OBJECT_MAPPER::createObjectNode
 			);
 
-			_jsonObject.add(_name, jsonObject);
+			_objectNode.set(_name, objectNode);
 
-			return new FieldStep(name, jsonObject);
+			return new FieldStep(name, objectNode);
 		}
 
 		/**
@@ -503,7 +520,7 @@ public class JSONObjectBuilder {
 		 * @param value the number to add to the JSON array
 		 */
 		public void numberValue(Number value) {
-			_jsonObject.addProperty(_name, value);
+			_objectNode.putRawValue(_name, new RawValue(value.toString()));
 		}
 
 		/**
@@ -512,14 +529,23 @@ public class JSONObjectBuilder {
 		 * @param value the string to add to the JSON array
 		 */
 		public void stringValue(String value) {
-			_jsonObject.addProperty(_name, value);
+			_objectNode.put(_name, value);
 		}
 
-		private final JsonObject _jsonObject;
 		private final String _name;
+		private final ObjectNode _objectNode;
 
 	}
 
-	private final JsonObject _jsonObject = new JsonObject();
+	private static final ObjectMapper _OBJECT_MAPPER;
+
+	static {
+		_OBJECT_MAPPER = new ObjectMapper();
+
+		_OBJECT_MAPPER.configure(ORDER_MAP_ENTRIES_BY_KEYS, true);
+		_OBJECT_MAPPER.enable(INDENT_OUTPUT);
+	}
+
+	private final ObjectNode _objectNode;
 
 }
