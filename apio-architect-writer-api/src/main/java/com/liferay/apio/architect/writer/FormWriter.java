@@ -16,8 +16,6 @@ package com.liferay.apio.architect.writer;
 
 import static com.liferay.apio.architect.writer.url.URLCreator.createFormURL;
 
-import com.google.gson.JsonObject;
-
 import com.liferay.apio.architect.form.Form;
 import com.liferay.apio.architect.form.FormField;
 import com.liferay.apio.architect.message.json.FormMessageMapper;
@@ -83,9 +81,7 @@ public class FormWriter {
 		_formMessageMapper.onFinish(
 			jsonObjectBuilder, _form, _requestInfo.getHttpHeaders());
 
-		JsonObject jsonObject = jsonObjectBuilder.build();
-
-		return jsonObject.toString();
+		return jsonObjectBuilder.build();
 	}
 
 	/**

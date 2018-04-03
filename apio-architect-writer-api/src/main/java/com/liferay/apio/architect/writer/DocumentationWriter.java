@@ -14,8 +14,6 @@
 
 package com.liferay.apio.architect.writer;
 
-import com.google.gson.JsonObject;
-
 import com.liferay.apio.architect.alias.RequestFunction;
 import com.liferay.apio.architect.documentation.Documentation;
 import com.liferay.apio.architect.message.json.DocumentationMessageMapper;
@@ -86,9 +84,7 @@ public class DocumentationWriter {
 		_documentationMessageMapper.onFinish(
 			jsonObjectBuilder, _documentation, _requestInfo.getHttpHeaders());
 
-		JsonObject jsonObject = jsonObjectBuilder.build();
-
-		return jsonObject.toString();
+		return jsonObjectBuilder.build();
 	}
 
 	/**

@@ -19,8 +19,6 @@ import static com.liferay.apio.architect.writer.url.URLCreator.createFormURL;
 import static com.liferay.apio.architect.writer.util.WriterUtil.getFieldsWriter;
 import static com.liferay.apio.architect.writer.util.WriterUtil.getPathOptional;
 
-import com.google.gson.JsonObject;
-
 import com.liferay.apio.architect.form.Form;
 import com.liferay.apio.architect.list.FunctionalList;
 import com.liferay.apio.architect.message.json.JSONObjectBuilder;
@@ -192,9 +190,7 @@ public class SingleModelWriter<T> {
 		_singleModelMessageMapper.onFinish(
 			_jsonObjectBuilder, _singleModel, _requestInfo.getHttpHeaders());
 
-		JsonObject jsonObject = _jsonObjectBuilder.build();
-
-		return Optional.of(jsonObject.toString());
+		return Optional.of(_jsonObjectBuilder.build());
 	}
 
 	public <S> void writeEmbeddedModelFields(

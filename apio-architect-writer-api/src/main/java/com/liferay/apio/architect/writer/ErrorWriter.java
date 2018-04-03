@@ -14,8 +14,6 @@
 
 package com.liferay.apio.architect.writer;
 
-import com.google.gson.JsonObject;
-
 import com.liferay.apio.architect.error.APIError;
 import com.liferay.apio.architect.message.json.ErrorMessageMapper;
 import com.liferay.apio.architect.message.json.JSONObjectBuilder;
@@ -64,9 +62,7 @@ public final class ErrorWriter {
 		errorMessageMapper.mapType(jsonObjectBuilder, apiError.getType());
 		errorMessageMapper.onFinish(jsonObjectBuilder, apiError, httpHeaders);
 
-		JsonObject jsonObject = jsonObjectBuilder.build();
-
-		return jsonObject.toString();
+		return jsonObjectBuilder.build();
 	}
 
 	private ErrorWriter() {
