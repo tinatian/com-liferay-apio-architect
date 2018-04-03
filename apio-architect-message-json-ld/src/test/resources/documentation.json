@@ -1,0 +1,7 @@
+{
+	"@context": "https://www.w3.org/ns/hydra/core#",
+	"@id": "http://api.example.com/doc/",
+	"@type": "ApiDocumentation",
+	"description": "Description",
+	"title": "Title"
+}
