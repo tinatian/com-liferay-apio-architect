@@ -16,8 +16,6 @@ package com.liferay.apio.architect.application.internal.endpoint;
 
 import static com.liferay.apio.architect.endpoint.ExceptionSupplierUtil.notFound;
 
-import com.google.gson.JsonObject;
-
 import com.liferay.apio.architect.alias.RequestFunction;
 import com.liferay.apio.architect.documentation.APIDescription;
 import com.liferay.apio.architect.documentation.APITitle;
@@ -26,6 +24,7 @@ import com.liferay.apio.architect.endpoint.BinaryEndpoint;
 import com.liferay.apio.architect.endpoint.FormEndpoint;
 import com.liferay.apio.architect.endpoint.RootEndpoint;
 import com.liferay.apio.architect.functional.Try;
+import com.liferay.apio.architect.message.json.JSONObjectBuilder;
 import com.liferay.apio.architect.routes.ItemRoutes;
 import com.liferay.apio.architect.routes.NestedCollectionRoutes;
 import com.liferay.apio.architect.single.model.SingleModel;
@@ -104,25 +103,21 @@ public class RootEndpointImpl implements RootEndpoint {
 		ServerURL serverURL = _providerManager.provideMandatory(
 			_httpServletRequest, ServerURL.class);
 
-		JsonObject resourcesJsonObject = new JsonObject();
+		JSONObjectBuilder jsonObjectBuilder = new JSONObjectBuilder();
 
 		resourceNames.forEach(
 			name -> {
 				String url = serverURL.get() + "/p/" + name;
 
-				JsonObject jsonObject = new JsonObject();
-
-				jsonObject.addProperty("href", url);
-
-				resourcesJsonObject.add(name, jsonObject);
+				jsonObjectBuilder.nestedField(
+					"resources", name, "href"
+				).stringValue(
+					url
+				);
 			});
 
-		JsonObject rootJsonObject = new JsonObject();
-
-		rootJsonObject.add("resources", resourcesJsonObject);
-
 		return Response.ok(
-			rootJsonObject.toString()
+			jsonObjectBuilder.build()
 		).type(
 			MediaType.valueOf("application/json")
 		).build();
