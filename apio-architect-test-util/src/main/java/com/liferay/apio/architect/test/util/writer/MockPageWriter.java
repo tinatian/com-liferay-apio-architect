@@ -18,9 +18,6 @@ import static com.liferay.apio.architect.operation.Method.POST;
 import static com.liferay.apio.architect.test.util.form.MockFormCreator.createForm;
 import static com.liferay.apio.architect.test.util.writer.MockWriterUtil.getRequestInfo;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import com.liferay.apio.architect.message.json.PageMessageMapper;
 import com.liferay.apio.architect.operation.Operation;
 import com.liferay.apio.architect.pagination.Page;
@@ -54,11 +51,13 @@ public class MockPageWriter {
 	 * Writes a Collection of {@link RootModel}, with the hierarchy of embedded
 	 * models and multiple fields.
 	 *
-	 * @param httpHeaders the request's {@code HttpHeaders}
-	 * @param pageMessageMapper the {@link PageMessageMapper} to use for writing
-	 *        the JSON object
+	 * @param  httpHeaders the request's {@code HttpHeaders}
+	 * @param  pageMessageMapper the {@link PageMessageMapper} to use for
+	 *         writing the JSON object
+	 * @return the {@code String} containing the JSON Object.
+	 * @review
 	 */
-	public static JsonObject write(
+	public static String write(
 		HttpHeaders httpHeaders,
 		PageMessageMapper<RootModel> pageMessageMapper) {
 
@@ -96,7 +95,7 @@ public class MockPageWriter {
 				MockWriterUtil::getSingleModel
 			).build());
 
-		return new Gson().fromJson(pageWriter.write(), JsonObject.class);
+		return pageWriter.write();
 	}
 
 	private MockPageWriter() {

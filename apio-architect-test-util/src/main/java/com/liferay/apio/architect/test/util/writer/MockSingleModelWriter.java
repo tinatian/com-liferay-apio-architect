@@ -21,9 +21,6 @@ import static com.liferay.apio.architect.test.util.writer.MockWriterUtil.getRequ
 
 import static java.util.Arrays.asList;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import com.liferay.apio.architect.message.json.SingleModelMessageMapper;
 import com.liferay.apio.architect.operation.Operation;
 import com.liferay.apio.architect.request.RequestInfo;
@@ -50,11 +47,13 @@ public class MockSingleModelWriter {
 	 * Writes a {@link RootModel}, with the hierarchy of embedded models and
 	 * multiple fields.
 	 *
-	 * @param httpHeaders the request's {@code HttpHeaders}
-	 * @param singleModelMessageMapper the {@link SingleModelMessageMapper} to
-	 *        use for writing the JSON object
+	 * @param  httpHeaders the request's {@code HttpHeaders}
+	 * @param  singleModelMessageMapper the {@link SingleModelMessageMapper} to
+	 *         use for writing the JSON object
+	 * @return the {@code String} containing the JSON Object.
+	 * @review
 	 */
-	public static JsonObject write(
+	public static String write(
 		HttpHeaders httpHeaders,
 		SingleModelMessageMapper<RootModel> singleModelMessageMapper) {
 
@@ -87,11 +86,8 @@ public class MockSingleModelWriter {
 
 		Optional<String> optional = singleModelWriter.write();
 
-		if (!optional.isPresent()) {
-			throw new AssertionError("Writer failed to write");
-		}
-
-		return new Gson().fromJson(optional.get(), JsonObject.class);
+		return optional.orElseThrow(
+			() -> new AssertionError("Writer failed to write"));
 	}
 
 	private MockSingleModelWriter() {

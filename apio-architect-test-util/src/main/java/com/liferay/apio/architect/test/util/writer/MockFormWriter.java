@@ -16,9 +16,6 @@ package com.liferay.apio.architect.test.util.writer;
 
 import static com.liferay.apio.architect.test.util.writer.MockWriterUtil.getRequestInfo;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import com.liferay.apio.architect.message.json.FormMessageMapper;
 import com.liferay.apio.architect.request.RequestInfo;
 import com.liferay.apio.architect.test.util.form.MockFormCreator;
@@ -40,11 +37,13 @@ public class MockFormWriter {
 	/**
 	 * Writes a {@link com.liferay.apio.architect.form.Form} object.
 	 *
-	 * @param httpHeaders the request's HTTP headers
-	 * @param formMessageMapper the {@code FormMessageMapper} to use for writing
-	 *        the JSON object
+	 * @param  httpHeaders the request's HTTP headers
+	 * @param  formMessageMapper the {@code FormMessageMapper} to use for
+	 *         writing the JSON object
+	 * @return the {@code String} containing the JSON Object.
+	 * @review
 	 */
-	public static JsonObject write(
+	public static String write(
 		HttpHeaders httpHeaders, FormMessageMapper formMessageMapper) {
 
 		RequestInfo requestInfo = getRequestInfo(httpHeaders);
@@ -58,7 +57,7 @@ public class MockFormWriter {
 				requestInfo
 			).build());
 
-		return new Gson().fromJson(formWriter.write(), JsonObject.class);
+		return formWriter.write();
 	}
 
 	private MockFormWriter() {
