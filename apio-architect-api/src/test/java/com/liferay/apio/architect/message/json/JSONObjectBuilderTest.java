@@ -30,6 +30,8 @@ import static org.hamcrest.Matchers.not;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import com.liferay.apio.architect.message.json.JSONObjectBuilder.ArrayValueStep;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,20 +51,14 @@ public class JSONObjectBuilderTest {
 				"array"
 			).arrayValue();
 
-		JsonObject jsonObject = new JsonObject();
-
-		jsonObject.addProperty("solution", 42);
-
 		arrayValueStep.addAllBooleans(Arrays.asList(false, true));
-		arrayValueStep.addAllJsonObjects(Arrays.asList(jsonObject, jsonObject));
 		arrayValueStep.addAllNumbers(Arrays.asList(21, 42));
 		arrayValueStep.addAllStrings(Arrays.asList("api", "apio"));
 
 		List<Matcher<? super JsonElement>> matchers = Arrays.asList(
-			aJsonBoolean(false), aJsonBoolean(true),
-			_aJsonObjectWithTheSolution, _aJsonObjectWithTheSolution,
-			aJsonInt(equalTo(21)), aJsonInt(equalTo(42)),
-			aJsonString(equalTo("api")), aJsonString(equalTo("apio")));
+			aJsonBoolean(false), aJsonBoolean(true), aJsonInt(equalTo(21)),
+			aJsonInt(equalTo(42)), aJsonString(equalTo("api")),
+			aJsonString(equalTo("apio")));
 
 		Matcher<JsonElement> isAJsonArrayWithElements = is(
 			aJsonArrayThat(contains(matchers)));
@@ -125,10 +121,9 @@ public class JSONObjectBuilderTest {
 
 	@Test
 	public void testInvokingAddOnAnArrayValueCreatesAValidJsonArray() {
-		JSONObjectBuilder.ArrayValueStep arrayValueStep =
-			_jsonObjectBuilder.field(
-				"array"
-			).arrayValue();
+		ArrayValueStep arrayValueStep = _jsonObjectBuilder.field(
+			"array"
+		).arrayValue();
 
 		arrayValueStep.addBoolean(true);
 		arrayValueStep.addNumber(42);

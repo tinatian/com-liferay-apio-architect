@@ -2,8 +2,6 @@ Bundle-Name: Liferay Apio Architect API
 Bundle-SymbolicName: com.liferay.apio.architect.api
 Bundle-Version: 1.0.0
 Export-Package:\
-	com.google.gson.*,\
-	\
 	com.liferay.apio.architect.alias,\
 	com.liferay.apio.architect.alias.form,\
 	com.liferay.apio.architect.alias.routes,\
