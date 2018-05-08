@@ -132,7 +132,7 @@ public abstract class Try<T> {
 		Objects.requireNonNull(throwableSupplier);
 		Objects.requireNonNull(supplier);
 
-		return Try.fromFallible(
+		return fromFallible(
 			throwableSupplier
 		).map(
 			Optional::get
@@ -593,6 +593,7 @@ public abstract class Try<T> {
 			ThrowableFunction<? super Exception, Try<T>> throwableFunction) {
 
 			Objects.requireNonNull(throwableFunction);
+
 			try {
 				return throwableFunction.apply(_exception);
 			}
